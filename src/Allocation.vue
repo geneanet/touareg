@@ -1,0 +1,123 @@
+<style>
+
+</style>
+
+<template>
+
+<v-app>
+    <v-toolbar class="blue" dark>
+        <v-btn icon light @click.native="$router.go(-1)">
+            <v-icon>arrow_back</v-icon>
+        </v-btn>
+        <v-toolbar-title>Allocation {{ allocation.Name }}</v-toolbar-title>
+    </v-toolbar>
+
+    <main>
+        <v-container fluid>
+            <v-layout row wrap>
+                <v-flex xs12>
+                    <v-card>
+                        <v-card-text>
+                            <v-layout row wrap>
+                                <v-flex xs12>
+                                    <v-select v-bind:items="tasks" v-model="task" label="Task"></v-select>
+                                </v-flex>
+                                <v-flex xs12>
+                                    <v-tabs dark v-model="active_tab" :scrollable="false" class="elevation-1">
+                                        <v-tabs-bar slot="activators" class="blue lighten-2">
+                                            <v-tabs-item :href="'events'" ripple>Events</v-tabs-item>
+                                            <v-tabs-item :href="'stdout'" ripple>stdout</v-tabs-item>
+                                            <v-tabs-item :href="'stderr'" ripple>stderr</v-tabs-item>
+                                            <v-tabs-slider class="blue"></v-tabs-slider>
+                                        </v-tabs-bar>
+                                        <v-tabs-content :id="'events'">
+                                            <v-data-table :headers="events_headers" :items="allocation.TaskStates[task].Events" v-if="allocation.TaskStates" hide-actions>
+                                                <template slot="items" scope="props">
+                                                    <td>{{ props.item.Time | formatNanoTimestamp }}</td>
+                                                    <td>{{ props.item.Type }}</td>
+                                                    <td>{{ props.item.Message }}</td>
+                                                </template>
+                                            </v-data-table>
+                                        </v-tabs-content>
+                                        <v-tabs-content :id="'stdout'">
+                                            <task-console :task="task" :allocid="allocid" :type="'stdout'"></task-console>
+                                        </v-tabs-content>
+                                        <v-tabs-content :id="'stderr'">
+                                            <task-console :task="task" :allocid="allocid" :type="'stderr'"></task-console>
+                                        </v-tabs-content>
+                                    </v-tabs>
+                                </v-flex>
+                            </v-layout>
+                        </v-card-text>
+                    </v-card>
+                </v-flex>
+            </v-layout>
+        </v-container>
+    </main>
+</v-app>
+
+</template>
+
+<script>
+
+import NomadWatcher from './NomadWatcher.js'
+
+export default {
+    name: 'allocation',
+    props: ['allocid'],
+    data() {
+        return {
+            watcher_alloc: null,
+            allocation: {},
+            tasks: [],
+            task: null,
+            active_tab: 'events',
+            events_headers: [{
+                text: 'Time',
+                value: 'Time',
+                align: 'left'
+            }, {
+                text: 'Type',
+                value: 'Type',
+                align: 'left'
+            }, {
+                text: 'Message',
+                value: 'Message',
+                align: 'left',
+                sortable: false
+            }]
+        }
+    },
+    created() {
+        this.fetchData()
+    },
+    destroyed() {
+        if (this.watcher_alloc) {
+            this.watcher_alloc.cancel()
+        }
+    },
+    watch: {
+        '$route': 'fetchData'
+    },
+    methods: {
+        fetchData() {
+                let that = this
+                let allocid = this.allocid
+
+                if (this.watcher_alloc) {
+                    this.watcher_alloc.cancel()
+                }
+                this.watcher_alloc = new NomadWatcher(nomad_url + '/v1/allocation/' + allocid)
+                this.watcher_alloc.onUpdate(allocation => {
+                    that.tasks = Object.keys(allocation.TaskStates)
+                    if (!that.task) {
+                        that.task = that.tasks[0]
+                    }
+                    that.allocation = allocation
+                })
+                this.watcher_alloc.watch()
+            }
+    }
+}
+
+</script>

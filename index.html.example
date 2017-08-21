@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Touareg - Nomad Services Management</title>
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <script lang="javascript">
+        window.nomad_url = "http://127.0.0.1:4646"
+        window.nomad_node_url = "http://{node}:4646"
+        window.consul_url = "http://127.0.0.1:8500"
+    </script>
+    <script src="/dist/build.js"></script>
+  </body>
+</html>
