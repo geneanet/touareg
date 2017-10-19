@@ -16,8 +16,8 @@
         </v-card-text>
         <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn class="red--text darken-1" flat="flat" @click.native="show = false; callback()">Yes</v-btn>
-            <v-btn class="green--text darken-1" flat="flat" @click.native="show = false;">No</v-btn>
+            <v-btn class="red--text darken-1" flat="flat" @click="show = false; callback()">Yes</v-btn>
+            <v-btn class="green--text darken-1" flat="flat" @click="show = false;">No</v-btn>
         </v-card-actions>
     </v-card>
 </v-dialog>

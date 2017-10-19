@@ -5,54 +5,56 @@
 <template>
 
 <v-app>
-    <v-toolbar class="blue" dark>
-        <v-btn icon light @click.native="$router.go(-1)">
+    <v-toolbar class="blue" dark app>
+        <v-btn icon @click="$router.go(-1)">
             <v-icon>arrow_back</v-icon>
         </v-btn>
         <v-toolbar-title>Allocation {{ allocation.Name }}</v-toolbar-title>
     </v-toolbar>
 
     <main>
-        <v-container fluid>
-            <v-layout row wrap>
-                <v-flex xs12>
-                    <v-card>
-                        <v-card-text>
-                            <v-layout row wrap>
-                                <v-flex xs12>
-                                    <v-select v-bind:items="tasks" v-model="task" label="Task"></v-select>
-                                </v-flex>
-                                <v-flex xs12>
-                                    <v-tabs dark v-model="active_tab" :scrollable="false" class="elevation-1">
-                                        <v-tabs-bar slot="activators" class="blue lighten-2">
-                                            <v-tabs-item :href="'events'" ripple>Events</v-tabs-item>
-                                            <v-tabs-item :href="'stdout'" ripple>stdout</v-tabs-item>
-                                            <v-tabs-item :href="'stderr'" ripple>stderr</v-tabs-item>
-                                            <v-tabs-slider class="blue"></v-tabs-slider>
-                                        </v-tabs-bar>
-                                        <v-tabs-content :id="'events'">
-                                            <v-data-table :headers="events_headers" :items="allocation.TaskStates[task].Events" v-if="allocation.TaskStates" hide-actions>
-                                                <template slot="items" scope="props">
-                                                    <td>{{ props.item.Time | formatNanoTimestamp }}</td>
-                                                    <td>{{ props.item.Type }}</td>
-                                                    <td>{{ props.item.Message }}</td>
-                                                </template>
-                                            </v-data-table>
-                                        </v-tabs-content>
-                                        <v-tabs-content :id="'stdout'">
-                                            <task-console :task="task" :allocid="allocid" :type="'stdout'"></task-console>
-                                        </v-tabs-content>
-                                        <v-tabs-content :id="'stderr'">
-                                            <task-console :task="task" :allocid="allocid" :type="'stderr'"></task-console>
-                                        </v-tabs-content>
-                                    </v-tabs>
-                                </v-flex>
-                            </v-layout>
-                        </v-card-text>
-                    </v-card>
-                </v-flex>
-            </v-layout>
-        </v-container>
+        <v-content>
+            <v-container fluid>
+                <v-layout row wrap>
+                    <v-flex xs12>
+                        <v-card>
+                            <v-card-text>
+                                <v-layout row wrap>
+                                    <v-flex xs12>
+                                        <v-select v-bind:items="tasks" v-model="task" label="Task"></v-select>
+                                    </v-flex>
+                                    <v-flex xs12>
+                                        <v-tabs dark v-model="active_tab" :scrollable="false" class="elevation-1">
+                                            <v-tabs-bar class="blue lighten-2">
+                                                <v-tabs-item :href="'#events'" ripple>Events</v-tabs-item>
+                                                <v-tabs-item :href="'#stdout'" ripple>stdout</v-tabs-item>
+                                                <v-tabs-item :href="'#stderr'" ripple>stderr</v-tabs-item>
+                                                <v-tabs-slider class="blue"></v-tabs-slider>
+                                            </v-tabs-bar>
+                                            <v-tabs-content :id="'events'">
+                                                <v-data-table :headers="events_headers" :items="allocation.TaskStates[task].Events" v-if="allocation.TaskStates" hide-actions>
+                                                    <template slot="items" slot-scope="props">
+                                                        <td>{{ props.item.Time | formatNanoTimestamp }}</td>
+                                                        <td>{{ props.item.Type }}</td>
+                                                        <td>{{ props.item.Message }}</td>
+                                                    </template>
+                                                </v-data-table>
+                                            </v-tabs-content>
+                                            <v-tabs-content :id="'stdout'" lazy>
+                                                <task-console :task="task" :allocid="allocid" :type="'stdout'"></task-console>
+                                            </v-tabs-content>
+                                            <v-tabs-content :id="'stderr'" lazy>
+                                                <task-console :task="task" :allocid="allocid" :type="'stderr'"></task-console>
+                                            </v-tabs-content>
+                                        </v-tabs>
+                                    </v-flex>
+                                </v-layout>
+                            </v-card-text>
+                        </v-card>
+                    </v-flex>
+                </v-layout>
+            </v-container>
+        </v-content>
     </main>
 </v-app>
 

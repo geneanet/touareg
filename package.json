@@ -11,7 +11,7 @@
   "dependencies": {
     "moment": "^2.18.1",
     "vue": "^2.3.3",
-    "vuetify": "^0.13.0"
+    "vuetify": "^0.16.0"
   },
   "devDependencies": {
     "axios": "^0.16.2",
