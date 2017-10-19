@@ -67,6 +67,9 @@ export default {
                 this.oboe.node('!', (data) => {
                     if (data.Data) {
                         that.data = that.data + window.atob(data.Data)
+                        if (that.data.length > 100*1024) {
+                            that.data = that.data.substr(that.data.length - 100*1024)
+                        }
                     }
                 })
             }
