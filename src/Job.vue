@@ -123,9 +123,9 @@
                                         <span>Filter allocations</span>
                                     </v-tooltip>
                                     <v-list>
-                                        <v-list-tile v-for="(status, index) in statuses" v-bind:key="index">
+                                        <v-list-tile v-for="(status, index) in statuses" v-bind:key="index" @click="status.filter = !status.filter">
                                             <v-list-tile-action>
-                                                <v-switch v-model="status.filter"></v-switch>
+                                                <v-switch v-model="status.filter" @click.stop="status.filter = !status.filter"></v-switch>
                                             </v-list-tile-action>
                                             <v-list-tile-title>{{ status.title }}</v-list-tile-title>
                                         </v-list-tile>
