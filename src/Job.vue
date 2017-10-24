@@ -43,19 +43,19 @@
                                 <v-expansion-panel-content :value="true">
                                     <div slot="header"><strong>Main settings</strong></div>
                                     <v-card>
-                                        <v-card-text>
+                                        <v-card-text class="grey lighten-4">
                                             <v-layout row wrap>
                                                 <v-flex xs4>
-                                                    <div class="grey--text text--darken-1"><strong>Type:</strong> {{ jobdata.Type }}</div>
-                                                    <div class="grey--text text--darken-1"><strong>Status:</strong> {{ jobdata.Status }}</div>
+                                                    <div><strong>Type:</strong> {{ jobdata.Type }}</div>
+                                                    <div><strong>Status:</strong> {{ jobdata.Status }}</div>
                                                 </v-flex>
                                                 <v-flex xs4>
-                                                    <div class="grey--text text--darken-1"><strong>Region:</strong> {{ jobdata.Region }}</div>
-                                                    <div class="grey--text text--darken-1"><strong>Datacenters:</strong> {{ jobdata.Datacenters ? jobdata.Datacenters.join(', ') : '' }}</div>
+                                                    <div><strong>Region:</strong> {{ jobdata.Region }}</div>
+                                                    <div><strong>Datacenters:</strong> {{ jobdata.Datacenters ? jobdata.Datacenters.join(', ') : '' }}</div>
                                                 </v-flex>
                                                 <v-flex xs4>
-                                                    <div class="grey--text text--darken-1"><strong>Bootstrapable:</strong> {{ jobdata.Bootstrapable ? 'Yes' : 'No' }}</div>
-                                                    <div class="grey--text text--darken-1"><strong>Reloadable:</strong> {{ jobdata.Reloadable ? 'Yes' : 'No' }}</div>
+                                                    <div><strong>Bootstrapable:</strong> {{ jobdata.Bootstrapable ? 'Yes' : 'No' }}</div>
+                                                    <div><strong>Reloadable:</strong> {{ jobdata.Reloadable ? 'Yes' : 'No' }}</div>
                                                 </v-flex>
                                             </v-layout>
                                         </v-card-text>
@@ -64,8 +64,8 @@
                                 <v-expansion-panel-content v-if="jobdata.Constraints">
                                     <div slot="header"><strong>Constraints</strong></div>
                                     <v-card>
-                                        <v-card-text>
-                                            <div class="grey--text text--darken-1" v-for="(constraint, index) in jobdata.Constraints" v-bind:key="constraint.LTarget">
+                                        <v-card-text class="grey lighten-4">
+                                            <div v-for="(constraint, index) in jobdata.Constraints" v-bind:key="constraint.LTarget">
                                                 <strong>{{ constraint.LTarget }}</strong> {{ constraint.Operand }} <strong>{{ constraint.RTarget }}</strong>
                                             </div>
                                         </v-card-text>
