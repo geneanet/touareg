@@ -16,32 +16,24 @@
 
     <main>
         <v-content>
-            <v-container fluid>
-                <v-layout row>
-                    <v-flex xs12>
-                        <v-card>
-                            <v-list two-line>
-                                <template v-for="(job, index) in jobs">
-                                    <v-list-tile ripple avatar v-bind:key="job.Name" @click="$router.push({ name: 'job', params: { jobid: job.Name }})">
-                                        <v-list-tile-avatar>
-                                            <v-icon v-if="job.Status == 'pending'"> hourglass_empty </v-icon>
-                                            <v-icon v-if="job.Status == 'running'"> play_arrow </v-icon>
-                                            <v-icon v-if="job.Status == 'dead'"> stop </v-icon>
-                                        </v-list-tile-avatar>
-                                        <v-list-tile-content>
-                                            <v-list-tile-title>{{ job.Name }}</v-list-tile-title>
-                                            <v-list-tile-sub-title>Status: {{ job.Status }}</v-list-tile-sub-title>
-                                        </v-list-tile-content>
-                                        <v-list-tile-action>
-                                            <v-list-tile-action-text>{{ job.Type }}</v-list-tile-action-text>
-                                        </v-list-tile-action>
-                                    </v-list-tile>
-                                </template>
-                            </v-list>
-                        </v-card>
-                    </v-flex>
-                </v-layout>
-            </v-container>
+            <v-list two-line>
+                <template v-for="(job, index) in jobs">
+                    <v-list-tile ripple avatar v-bind:key="job.Name" @click="$router.push({ name: 'job', params: { jobid: job.Name }})">
+                        <v-list-tile-avatar>
+                            <v-icon v-if="job.Status == 'pending'"> hourglass_empty </v-icon>
+                            <v-icon v-if="job.Status == 'running'"> play_arrow </v-icon>
+                            <v-icon v-if="job.Status == 'dead'"> stop </v-icon>
+                        </v-list-tile-avatar>
+                        <v-list-tile-content>
+                            <v-list-tile-title>{{ job.Name }}</v-list-tile-title>
+                            <v-list-tile-sub-title>Status: {{ job.Status }}</v-list-tile-sub-title>
+                        </v-list-tile-content>
+                        <v-list-tile-action>
+                            <v-list-tile-action-text>{{ job.Type }}</v-list-tile-action-text>
+                        </v-list-tile-action>
+                    </v-list-tile>
+                </template>
+            </v-list>
         </v-content>
     </main>
 </v-app>
