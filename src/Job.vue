@@ -115,17 +115,17 @@
                                 <v-toolbar-title>Allocations</v-toolbar-title>
                                 <v-spacer></v-spacer>
 
-                                <v-menu offset-y>
-                                    <v-tooltip left>
+                                <v-menu offset-y :close-on-content-click="false">
+                                    <v-tooltip left slot="activator">
                                         <v-btn light icon slot="activator">
                                             <v-icon>filter_list</v-icon>
                                         </v-btn>
                                         <span>Filter allocations</span>
                                     </v-tooltip>
                                     <v-list>
-                                        <v-list-tile v-for="(status, index) in statuses" v-bind:key="index" @click.stop="status.filter = !status.filter">
+                                        <v-list-tile v-for="(status, index) in statuses" v-bind:key="index">
                                             <v-list-tile-action>
-                                                <v-checkbox v-model="status.filter" @click.stop=""></v-checkbox>
+                                                <v-switch v-model="status.filter"></v-switch>
                                             </v-list-tile-action>
                                             <v-list-tile-title>{{ status.title }}</v-list-tile-title>
                                         </v-list-tile>
