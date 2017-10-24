@@ -12,6 +12,25 @@
             <v-icon>arrow_back</v-icon>
         </v-btn>
         <v-toolbar-title>Job {{ jobdata.Name }}</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-tooltip left>
+            <v-btn icon v-if="jobdata.Status == 'running' || jobdata.Status == 'pending'" @click="stopJob()" slot="activator">
+                <v-icon>stop</v-icon>
+            </v-btn>
+            <span>Stop the job</span>
+        </v-tooltip>
+        <v-tooltip left>
+            <v-btn icon v-if="jobdata.Status == 'dead'" :disabled="!jobdata.Bootstrapable" @click="startJob()" slot="activator">
+                <v-icon>play_arrow</v-icon>
+            </v-btn>
+            <span>Start the job</span>
+        </v-tooltip>
+        <v-tooltip left>
+            <v-btn icon v-if="jobdata.Reloadable" @click="reloadJob()" :disabled="jobdata.Status != 'running'" slot="activator">
+                <v-icon>autorenew</v-icon>
+            </v-btn>
+            <span>Reload the job</span>
+        </v-tooltip left>
     </v-toolbar>
 
     <main>
@@ -53,27 +72,6 @@
                                     </v-card>
                                 </v-expansion-panel-content>
                             </v-expansion-panel>
-                            <v-card-actions class="grey lighten-4">
-                                <v-spacer></v-spacer>
-                                <v-tooltip left>
-                                    <v-btn icon v-if="jobdata.Status == 'running' || jobdata.Status == 'pending'" @click="stopJob()" slot="activator">
-                                        <v-icon>stop</v-icon>
-                                    </v-btn>
-                                    <span>Stop the job</span>
-                                </v-tooltip>
-                                <v-tooltip left>
-                                    <v-btn icon v-if="jobdata.Status == 'dead'" :disabled="!jobdata.Bootstrapable" @click="startJob()" slot="activator">
-                                        <v-icon>play_arrow</v-icon>
-                                    </v-btn>
-                                    <span>Start the job</span>
-                                </v-tooltip>
-                                <v-tooltip left>
-                                    <v-btn icon v-if="jobdata.Reloadable" @click="reloadJob()" :disabled="jobdata.Status != 'running'" slot="activator">
-                                        <v-icon>autorenew</v-icon>
-                                    </v-btn>
-                                    <span>Reload the job</span>
-                                </v-tooltip left>
-                            </v-card-actions>
                         </v-card>
                     </v-flex>
                     <v-flex xs12 class="mb-3" v-for="(tg, index) in jobdata.TaskGroups" v-bind:key="tg.Name">
