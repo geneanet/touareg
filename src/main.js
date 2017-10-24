@@ -7,6 +7,7 @@ import moment from 'moment'
 import App from './App.vue'
 import Jobs from './Jobs.vue'
 import Job from './Job.vue'
+import TaskGroup from './TaskGroup.vue'
 import Allocation from './Allocation.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
 import TaskConsole from './TaskConsole.vue'
@@ -32,6 +33,7 @@ Vue.filter('formatNanoTimestampRelative', function(value) {
 const routes = [
     { name:'jobs', path: '/', component: Jobs, meta: { title: 'Jobs' } },
     { name: 'job', path: '/job/:jobid', component: Job, props: true, meta: { title: 'Job' } },
+    { name: 'taskgroup', path: '/job/:jobid/:tgid', component: TaskGroup, props: true, meta: { title: 'Task Group' } },
     { name: 'allocation', path: '/allocation/:allocid', component: Allocation, props: true }
 ]
 

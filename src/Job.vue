@@ -79,6 +79,12 @@
                             <v-toolbar class="blue lighten-2" light>
                                 <v-icon>group_work</v-icon>
                                 <v-toolbar-title>Task Group <strong>{{ tg.Name }}</strong></v-toolbar-title>
+                                <v-tooltip right>
+                                    <v-btn icon @click="$router.push({ name: 'taskgroup', params: { jobid: jobid, tgid: tg.Name }})" slot="activator">
+                                        <v-icon>info_outline</v-icon>
+                                    </v-btn>
+                                    <span>Task Group details</span>
+                                </v-tooltip>
                                 <v-spacer></v-spacer>
                                 <v-tooltip left>
                                     <v-btn icon @click="updateTaskGroupCount(tg.Name, tg.Count + 1)" slot="activator">
