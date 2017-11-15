@@ -1,7 +1,7 @@
 {
   "name": "touareg",
   "description": "A Vue.js project",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "Hervé BRY <herve.bry@geneanet.org>",
   "private": true,
   "scripts": {
