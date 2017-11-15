@@ -7,6 +7,7 @@ import ConfirmDialog from './ConfirmDialog.vue'
 import TaskConsole from './TaskConsole.vue'
 
 import(/* webpackChunkName: "vuetify-css" */'../node_modules/vuetify/dist/vuetify.min.css')
+import(/* webpackChunkName: "material-design-icons" */ 'webpack-material-design-icons')
 
 var pVue = import(/* webpackChunkName: "vue" */ 'vue')
 var pVueRouter = import(/* webpackChunkName: "vue-router" */ 'vue-router')
