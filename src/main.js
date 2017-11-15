@@ -1,9 +1,3 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Vuetify from 'vuetify'
-
-import moment from 'moment'
-
 import App from './App.vue'
 import Jobs from './Jobs.vue'
 import Job from './Job.vue'
@@ -12,39 +6,51 @@ import Allocation from './Allocation.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
 import TaskConsole from './TaskConsole.vue'
 
-import('../node_modules/vuetify/dist/vuetify.min.css')
+import(/* webpackChunkName: "vuetify-css" */'../node_modules/vuetify/dist/vuetify.min.css')
 
-Vue.use(Vuetify)
-Vue.use(VueRouter)
+var pVue = import(/* webpackChunkName: "vue" */ 'vue')
+var pVueRouter = import(/* webpackChunkName: "vue-router" */ 'vue-router')
+var pVuetify = import(/* webpackChunkName: "vuetify" */ 'vuetify')
+var pMoment = import(/* webpackChunkName: "moment" */ 'moment')
 
-Vue.component('confirm-dialog', ConfirmDialog)
-Vue.component('task-console', TaskConsole)
+Promise.all([pVue, pVueRouter, pVuetify, pMoment]).then(promises => {
+    var Vue = promises[0].default
+    var VueRouter = promises[1].default
+    var Vuetify = promises[2].default
+    var moment = promises[3]
 
-Vue.filter('formatNanoTimestamp', function(value) {
-  if (value) {
-    return moment.unix(Math.floor(value / 1000000000)).format('DD/MM/YYYY HH:mm:ss')
-  }
-})
+    Vue.use(Vuetify)
+    Vue.use(VueRouter)
 
-Vue.filter('formatNanoTimestampRelative', function(value) {
-  if (value) {
-    return moment.unix(Math.floor(value / 1000000000)).fromNow()
-  }
-})
+    Vue.component('confirm-dialog', ConfirmDialog)
+    Vue.component('task-console', TaskConsole)
 
-const routes = [
-    { name:'jobs', path: '/', component: Jobs, meta: { title: 'Jobs' } },
-    { name: 'job', path: '/job/:jobid', component: Job, props: true, meta: { title: 'Job' } },
-    { name: 'taskgroup', path: '/job/:jobid/:tgid', component: TaskGroup, props: true, meta: { title: 'Task Group' } },
-    { name: 'allocation', path: '/allocation/:allocid', component: Allocation, props: true }
-]
+    Vue.filter('formatNanoTimestamp', function(value) {
+        if (value) {
+            return moment.unix(Math.floor(value / 1000000000)).format('DD/MM/YYYY HH:mm:ss')
+        }
+    })
 
-const router = new VueRouter({
-  routes: routes
-})
+    Vue.filter('formatNanoTimestampRelative', function(value) {
+        if (value) {
+            return moment.unix(Math.floor(value / 1000000000)).fromNow()
+        }
+    })
 
-let app = new Vue({
-    router: router,
-    el: '#app',
-    render: h => h(App)
+    const routes = [
+        { name:'jobs', path: '/', component: Jobs, meta: { title: 'Jobs' } },
+        { name: 'job', path: '/job/:jobid', component: Job, props: true, meta: { title: 'Job' } },
+        { name: 'taskgroup', path: '/job/:jobid/:tgid', component: TaskGroup, props: true, meta: { title: 'Task Group' } },
+        { name: 'allocation', path: '/allocation/:allocid', component: Allocation, props: true }
+    ]
+
+    const router = new VueRouter({
+        routes: routes
+    })
+
+    let app = new Vue({
+        router: router,
+        el: '#app',
+        render: h => h(App)
+    })
 })
