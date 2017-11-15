@@ -12,6 +12,6 @@
         window.nomad_node_url = "http://{node}:4646"
         window.consul_url = "http://127.0.0.1:8500"
     </script>
-    <script src="/dist/build.js"></script>
+    <script src="dist/build.js"></script>
   </body>
 </html>
