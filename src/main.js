@@ -12,6 +12,8 @@ import Allocation from './Allocation.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
 import TaskConsole from './TaskConsole.vue'
 
+import('../node_modules/vuetify/dist/vuetify.min.css')
+
 Vue.use(Vuetify)
 Vue.use(VueRouter)
 
