@@ -39,8 +39,8 @@
                 <v-layout row wrap>
                     <v-flex xs12 class="mb-3">
                         <v-card>
-                            <v-expansion-panel expand class="elevation-0">
-                                <v-expansion-panel-content :value="true">
+                            <v-expansion-panel expand class="elevation-0" :value="[true]">
+                                <v-expansion-panel-content>
                                     <div slot="header"><strong>Main settings</strong></div>
                                     <v-card>
                                         <v-card-text class="grey lighten-4">
