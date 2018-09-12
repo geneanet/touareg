@@ -24,14 +24,11 @@
                                         <v-select v-bind:items="tasks" v-model="task" label="Task"></v-select>
                                     </v-flex>
                                     <v-flex xs12>
-                                        <v-tabs dark v-model="active_tab" :scrollable="false" class="elevation-1">
-                                            <v-tabs-bar class="blue lighten-2">
-                                                <v-tabs-item :href="'#events'" ripple>Events</v-tabs-item>
-                                                <v-tabs-item :href="'#stdout'" ripple>stdout</v-tabs-item>
-                                                <v-tabs-item :href="'#stderr'" ripple>stderr</v-tabs-item>
-                                                <v-tabs-slider class="blue"></v-tabs-slider>
-                                            </v-tabs-bar>
-                                            <v-tabs-content :id="'events'">
+                                        <v-tabs dark v-model="active_tab" :scrollable="false" color="blue" class="elevation-1">
+                                            <v-tab :key="'events'" ripple>Events</v-tab>
+                                            <v-tab :key="'stdout'" ripple>stdout</v-tab>
+                                            <v-tab :key="'stderr'" ripple>stderr</v-tab>
+                                            <v-tab-item :key="'events'">
                                                 <v-data-table :headers="events_headers" :items="allocation.TaskStates[task].Events" v-if="allocation.TaskStates" hide-actions>
                                                     <template slot="items" slot-scope="props">
                                                         <td>{{ props.item.Time | formatNanoTimestamp }}</td>
@@ -39,13 +36,13 @@
                                                         <td>{{ props.item.Message }}</td>
                                                     </template>
                                                 </v-data-table>
-                                            </v-tabs-content>
-                                            <v-tabs-content :id="'stdout'" lazy>
+                                            </v-tab-item>
+                                            <v-tab-item :key="'stdout'" lazy>
                                                 <task-console :task="task" :allocid="allocid" :type="'stdout'"></task-console>
-                                            </v-tabs-content>
-                                            <v-tabs-content :id="'stderr'" lazy>
+                                            </v-tab-item>
+                                            <v-tab-item :key="'stderr'" lazy>
                                                 <task-console :task="task" :allocid="allocid" :type="'stderr'"></task-console>
-                                            </v-tabs-content>
+                                            </v-tab-item>
                                         </v-tabs>
                                     </v-flex>
                                 </v-layout>

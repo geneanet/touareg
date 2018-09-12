@@ -26,7 +26,7 @@
         </v-btn>
         <v-toolbar-title>Jobs</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-text-field style="max-width: 30em" clearable autofocus prepend-icon="search" solo label="Filter..." v-model="filter"></v-text-field>
+        <v-text-field style="max-width: 30em" clearable light autofocus prepend-inner-icon="search" solo label="Filter..." v-model="filter"></v-text-field>
     </v-toolbar>
 
     <main>
