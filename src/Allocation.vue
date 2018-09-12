@@ -33,7 +33,7 @@
                                                     <template slot="items" slot-scope="props">
                                                         <td>{{ props.item.Time | formatNanoTimestamp }}</td>
                                                         <td>{{ props.item.Type }}</td>
-                                                        <td>{{ props.item.Message }}</td>
+                                                        <td>{{ props.item.DisplayMessage }}</td>
                                                     </template>
                                                 </v-data-table>
                                             </v-tab-item>
