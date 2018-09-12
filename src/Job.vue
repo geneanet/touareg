@@ -362,7 +362,7 @@ export default {
                 let that = this
                 let jobid = this.jobid
 
-                if (count < 0) {
+                if (count < 0 && count != 'default') {
                     count = 0
                 }
 
@@ -371,8 +371,12 @@ export default {
                         let jobdata = request.data
 
                         jobdata.TaskGroups.forEach(taskgroup => {
-                            if (taskgroup.Name == tg) {
-                                taskgroup.Count = count
+                            if (taskgroup.Name == tg || tg == '') {
+                                if (count == 'default') {
+                                    taskgroup.Count = Number(taskgroup.Meta.default_count)
+                                } else {
+                                    taskgroup.Count = count
+                                }
                             }
                         })
 
@@ -397,17 +401,12 @@ export default {
                     "Stop job <strong>" + this.jobdata.Name + "</strong> ?",
                     "You are about to stop the job <strong>" + this.jobdata.Name +"</strong>. Are you sure you want to do that ?",
                     function() {
-                        that.jobdata.TaskGroups.forEach(taskgroup => {
-                            that.updateTaskGroupCount(taskgroup.Name, 0)
-                        })
+                        that.updateTaskGroupCount('', 0)
                     }
                 )
             },
             startJob() {
-                let that = this
-                this.jobdata.TaskGroups.forEach(taskgroup => {
-                    that.updateTaskGroupCount(taskgroup.Name, taskgroup.DefaultCount)
-                })
+                this.updateTaskGroupCount('', 'default')
             },
             reloadJob() {
                 let jobid = this.jobid
