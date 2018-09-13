@@ -11,7 +11,7 @@
         <v-btn icon @click="$router.go(-1)">
             <v-icon>arrow_back</v-icon>
         </v-btn>
-        <v-toolbar-title>Task Group <strong>{{ jobdata.Name }}.{{ tgid }}</strong></v-toolbar-title>
+        <v-toolbar-title>Task Group {{ jobdata.Name }}.{{ tgid }}</v-toolbar-title>
     </v-toolbar>
 
     <main>
