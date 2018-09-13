@@ -5,6 +5,7 @@ import TaskGroup from './TaskGroup.vue'
 import Allocation from './Allocation.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
 import TaskConsole from './TaskConsole.vue'
+import AllocSummary from './AllocSummary.vue'
 
 import(/* webpackChunkName: "vuetify-css" */'../node_modules/vuetify/dist/vuetify.min.css')
 import(/* webpackChunkName: "material-design-icons" */ 'webpack-material-design-icons')
@@ -25,6 +26,7 @@ Promise.all([pVue, pVueRouter, pVuetify, pMoment]).then(promises => {
 
     Vue.component('confirm-dialog', ConfirmDialog)
     Vue.component('task-console', TaskConsole)
+    Vue.component('alloc-summary', AllocSummary)
 
     Vue.filter('formatNanoTimestamp', function(value) {
         if (value) {

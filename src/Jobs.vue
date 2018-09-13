@@ -14,36 +14,6 @@
   transition: all .3s;
 }
 
-.joblist-alloc {
-    display: inline-block;
-    height: 1em;
-}
-
-.joblist-alloc-Complete {
-    background: #46cc99
-}
-
-.joblist-alloc-Running {
-    background: #96e2c5
-}
-
-.joblist-alloc-Failed {
-    background: #c75d58
-}
-
-.joblist-alloc-Queued {
-    background: #d3d3d3
-}
-
-.joblist-alloc-Starting {
-    background: #e4ceb8
-}
-
-.joblist-alloc-Lost {
-    background: gray
-}
-
-
 </style>
 
 <template>
@@ -76,13 +46,7 @@
                                             <div class="grey--text">Type: {{ job.Type }}</div>
                                         </div>
                                     </v-card-title>
-                                    <v-container fluid grid-list-xs style="padding: 0 1em" v-if="job.SummaryTotal.Total > 0">
-                                        <v-layout row>
-                                            <v-flex xs12>
-                                                <div v-for="state in ['Queued', 'Starting', 'Running', 'Complete', 'Failed', 'Lost']" v-bind:key="state" class="joblist-alloc"  v-bind:class="['joblist-alloc-' + state]" v-bind:style="{'width': (job.SummaryTotal[state] / job.SummaryTotal.Total * 100) + '%'}" v-bind:title="state + ': ' + job.SummaryTotal[state]"/>
-                                            </v-flex>
-                                        </v-layout>
-                                    </v-container>
+                                    <alloc-summary :summary="job.SummaryTotal"></alloc-summary>
                                     <v-card-actions>
                                         <v-spacer></v-spacer>
                                         <v-btn flat @click="$router.push({ name: 'job', params: { jobid: job.Name }})">
