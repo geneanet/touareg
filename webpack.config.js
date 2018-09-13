@@ -59,7 +59,10 @@ module.exports = {
   devtool: '#eval-source-map',
   plugins: [
     new VueLoaderPlugin()
-  ]  
+  ],
+  optimization: {
+    minimize: false
+  }
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -69,12 +72,6 @@ if (process.env.NODE_ENV === 'production') {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      compress: {
-        warnings: false
       }
     }),
     new webpack.LoaderOptionsPlugin({
