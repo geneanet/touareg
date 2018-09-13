@@ -14,6 +14,35 @@
   transition: all .3s;
 }
 
+.joblist-alloc {
+    display: inline-block;
+    height: 1em;
+}
+
+.joblist-alloc-Complete {
+    background: #46cc99
+}
+
+.joblist-alloc-Running {
+    background: #96e2c5
+}
+
+.joblist-alloc-Failed {
+    background: #c75d58
+}
+
+.joblist-alloc-Queued {
+    background: #d3d3d3
+}
+
+.joblist-alloc-Starting {
+    background: #e4ceb8
+}
+
+.joblist-alloc-Lost {
+    background: gray
+}
+
 
 </style>
 
@@ -31,26 +60,41 @@
 
     <main>
         <v-content>
-            <v-list two-line>
-                <transition-group name="joblist" tag="div">
-                    <template v-for="(job, index) in filtered_jobs">
-                        <v-list-tile class="joblist" ripple avatar v-bind:key="job.Name" @click="$router.push({ name: 'job', params: { jobid: job.Name }})">
-                            <v-list-tile-avatar>
-                                <v-icon v-if="job.Status == 'pending'"> hourglass_empty </v-icon>
-                                <v-icon v-if="job.Status == 'running'"> play_arrow </v-icon>
-                                <v-icon v-if="job.Status == 'dead'"> stop </v-icon>
-                            </v-list-tile-avatar>
-                            <v-list-tile-content>
-                                <v-list-tile-title>{{ job.Name }}</v-list-tile-title>
-                                <v-list-tile-sub-title>Status: {{ job.Status }}</v-list-tile-sub-title>
-                            </v-list-tile-content>
-                            <v-list-tile-action>
-                                <v-list-tile-action-text>{{ job.Type }}</v-list-tile-action-text>
-                            </v-list-tile-action>
-                        </v-list-tile>
-                    </template>
-                </transition-group>
-            </v-list>
+                <v-container fluid grid-list-lg>
+                    <v-layout row wrap>
+                        <template v-for="(job, index) in filtered_jobs">
+                            <v-flex v-bind:key="job.Name" xs12 sm6 md4 lg3>   
+                                <v-card>
+                                    <v-card-title primary-title>
+                                        <div>
+                                            <div class="headline">
+                                                {{ job.Name }}
+                                            </div>
+                                            <div class="grey--text">
+                                                Status: {{ job.Status }}
+                                            </div>
+                                            <div class="grey--text">Type: {{ job.Type }}</div>
+                                        </div>
+                                    </v-card-title>
+                                    <v-container fluid grid-list-xs style="padding: 0 1em" v-if="job.SummaryTotal.Total > 0">
+                                        <v-layout row>
+                                            <v-flex xs12>
+                                                <div v-for="state in ['Queued', 'Starting', 'Running', 'Complete', 'Failed', 'Lost']" v-bind:key="state" class="joblist-alloc"  v-bind:class="['joblist-alloc-' + state]" v-bind:style="{'width': (job.SummaryTotal[state] / job.SummaryTotal.Total * 100) + '%'}" v-bind:title="state + ': ' + job.SummaryTotal[state]"/>
+                                            </v-flex>
+                                        </v-layout>
+                                    </v-container>
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+                                        <v-btn flat @click="$router.push({ name: 'job', params: { jobid: job.Name }})">
+                                            <v-icon>search</v-icon>
+                                            <span>Details</span>
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-flex>
+                        </template>
+                    </v-layout>
+                </v-container>
         </v-content>
     </main>
 </v-app>
@@ -83,6 +127,25 @@ export default {
         this.watcher_jobs = new NomadWatcher(nomad_url + '/v1/jobs')
         this.watcher_jobs.onUpdate(jobs => {
             that.jobs = jobs
+            that.jobs.forEach(job => {
+                var stats = {
+                    'Complete': 0,
+                    'Failed': 0,
+                    'Lost': 0,
+                    'Queued': 0,
+                    'Running': 0,
+                    'Starting': 0,
+                    'Total': 0
+                }
+                for (var tg in job.JobSummary.Summary) {
+                    var tg_stats = job.JobSummary.Summary[tg]
+                    for (var state in tg_stats) {
+                        stats[state] += tg_stats[state]
+                        stats['Total'] += tg_stats[state]
+                    }
+                }
+                job['SummaryTotal'] = stats
+            })
         })
         this.watcher_jobs.watch()
     },
