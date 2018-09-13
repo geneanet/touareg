@@ -3,7 +3,7 @@
   "description": "A Vue.js project",
   "version": "1.1.0",
   "author": "Hervé BRY <herve.bry@geneanet.org>",
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot --mode=development",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
