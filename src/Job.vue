@@ -61,6 +61,14 @@
                                         </v-card-text>
                                     </v-card>
                                 </v-expansion-panel-content>
+                                <v-expansion-panel-content>
+                                    <div slot="header"><strong>Allocations Summary</strong></div>
+                                    <v-card>
+                                        <v-card-text class="grey lighten-4">
+                                            <alloc-summary :summary="totalSummary" :text="true"></alloc-summary>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-expansion-panel-content>
                                 <v-expansion-panel-content v-if="jobdata.Constraints">
                                     <div slot="header"><strong>Constraints</strong></div>
                                     <v-card>
@@ -118,14 +126,7 @@
                                 </v-tooltip>
                             </v-toolbar>
                             <v-card-text>
-                                <v-layout row justify-space-around>
-                                    <v-flex class="text-xs-center">
-                                        <div>Wanted</div><strong>{{ tg.Count }}</strong>
-                                    </v-flex>
-                                    <v-flex class="text-xs-center" v-for="(status, index) in statuses" v-bind:key="index">
-                                        <div>{{ status.title }}</div><strong>{{ tg.Name in allocdata ? allocdata[tg.Name].Summary[index] : 0 }}</strong>
-                                    </v-flex>
-                                </v-layout>
+                                <alloc-summary :summary="summary[tg.Name]" :wanted="tg.Count" :text="true"></alloc-summary>
                             </v-card-text>
                             <v-toolbar class="blue lighten-4 elevation-1" light dense v-if="tg.Name in allocdata">
                                 <v-toolbar-title>Allocations</v-toolbar-title>
@@ -204,6 +205,7 @@ export default {
             nodes: {},
             jobdata: {},
             allocdata: [],
+            summary: {},
             statuses: {
                 pending: {
                     title: 'Pending',
@@ -233,7 +235,8 @@ export default {
             },
             watcher_nodes: null,
             watcher_job: null,
-            watcher_allocs: null
+            watcher_allocs: null,
+            watcher_summary: null
         }
     },
     created() {
@@ -262,9 +265,31 @@ export default {
         if (this.watcher_allocs) {
             this.watcher_allocs.cancel()
         }
+        if (this.watcher_summary) {
+            this.watcher_summary.cancel()
+        }
     },
     watch: {
         '$route': 'fetchData'
+    },
+    computed: {
+        totalSummary: function () {
+            let stats = {
+                    'Complete': 0,
+                    'Failed': 0,
+                    'Lost': 0,
+                    'Queued': 0,
+                    'Running': 0,
+                    'Starting': 0                
+            }
+            for (let tg in this.summary) {
+                let tg_stats = this.summary[tg]
+                for (let state in tg_stats) {
+                    stats[state] += tg_stats[state]
+                }
+            }
+            return stats
+        }
     },
     methods: {
         fetchData() {
@@ -342,6 +367,15 @@ export default {
                     that.allocdata = allocdata
                 })
                 this.watcher_allocs.watch()
+
+                if (this.watcher_summary) {
+                    this.watcher_summary.cancel()
+                }
+                this.watcher_summary = new NomadWatcher(nomad_url + '/v1/job/' + jobid + '/summary')
+                this.watcher_summary.onUpdate(summary => {
+                    that.summary = summary.Summary
+                })
+                this.watcher_summary.watch()
             },
             updateTaskGroupCountProtected(tg, count) {
                 let that = this
