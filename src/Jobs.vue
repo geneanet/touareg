@@ -26,6 +26,18 @@
         <v-toolbar-title>Jobs</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-text-field style="max-width: 30em" clearable light autofocus prepend-inner-icon="search" solo label="Filter..." v-model="filter"></v-text-field>
+        <v-spacer></v-spacer>
+        <v-menu bottom left>
+              <v-btn dark icon v-on="on" slot="activator">
+                <v-icon>more_vert</v-icon>
+              </v-btn>
+
+            <v-list light>
+              <v-list-tile @click="reloadPHP()">
+                <v-list-tile-title>Reload PHP tasks</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+        </v-menu>
     </v-toolbar>
 
     <main>
@@ -61,6 +73,8 @@
                 </v-container>
         </v-content>
     </main>
+
+    <confirm-dialog ref="confirm"></confirm-dialog>
 </v-app>
 
 </template>
@@ -68,11 +82,15 @@
 <script>
 
 import NomadWatcher from './NomadWatcher.js'
+import Axios from 'axios'
 
 export default {
     name: 'jobs',
     data() {
         return {
+            dialog_confirm: {
+                show: false
+            },
             jobs: [],
             watcher_jobs: null,
             filter: ""
@@ -116,6 +134,21 @@ export default {
     destroyed() {
         if (this.watcher_jobs) {
             this.watcher_jobs.cancel()
+        }
+    },
+    methods: {
+        reloadPHP() {
+            let that = this
+
+            this.$refs.confirm.confirm(
+                "Restart PHP tasks ?",
+                "You are about to restart all PHP tasks. Are you sure you want to do that ?",
+                function() {
+                    Axios.put(consul_url + '/v1/kv/nomad_reload/php', Date.now()).catch(error => {
+                        this.addSnack('Error while reloading PHP tasks (' + error + ').', 'error')
+                    })
+                }
+            )
         }
     }
 }
