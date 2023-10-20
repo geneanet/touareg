@@ -81,7 +81,7 @@ export default {
     computed: {
         filtered_jobs: function() {
             return this.jobs.filter(job => {
-                    return !this.filter || job.Name.toLowerCase().includes(this.filter.toLowerCase())
+                return job.Type == "service" && (!this.filter || job.Name.toLowerCase().includes(this.filter.toLowerCase()))
             })
         }
     },
