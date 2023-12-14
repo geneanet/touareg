@@ -40,10 +40,10 @@
 
 <v-container fluid grid-list-xs style="padding: 0">
     <v-layout row justify-space-around>
-        <v-flex class="text-xs-center" v-if="wanted">
+        <v-flex class="text-center" v-if="wanted">
             <div>Wanted</div><strong>{{ wanted }}</strong>
         </v-flex>
-        <v-flex class="text-xs-center" v-for="state in ['Queued', 'Starting', 'Running', 'Complete', 'Failed', 'Lost']" v-bind:key="state" v-if="text">
+        <v-flex class="text-center" v-for="state in ['Queued', 'Starting', 'Running', 'Complete', 'Failed', 'Lost']" v-bind:key="state" v-if="text">
             <div>{{ state }}</div><strong>{{ summary[state] }}</strong>
         </v-flex>
     </v-layout>

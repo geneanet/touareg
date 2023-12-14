@@ -8,7 +8,7 @@ import TaskConsole from './TaskConsole.vue'
 import AllocSummary from './AllocSummary.vue'
 
 import(/* webpackChunkName: "vuetify-css" */'../node_modules/vuetify/dist/vuetify.min.css')
-import(/* webpackChunkName: "material-design-icons" */ 'webpack-material-design-icons')
+import(/* webpackChunkName: "mdi" */ '@mdi/font/css/materialdesignicons.css')
 
 var pVue = import(/* webpackChunkName: "vue" */ 'vue')
 var pVueRouter = import(/* webpackChunkName: "vue-router" */ 'vue-router')
@@ -51,7 +51,14 @@ Promise.all([pVue, pVueRouter, pVuetify, pMoment]).then(promises => {
         routes: routes
     })
 
+    const vuetify = new Vuetify({
+        icons: {
+            iconfont: 'mdi',
+        },
+    })
+
     let app = new Vue({
+        vuetify: vuetify,
         router: router,
         el: '#app',
         render: h => h(App)

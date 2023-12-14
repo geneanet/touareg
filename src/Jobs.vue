@@ -1,79 +1,55 @@
 <style>
 
-.joblist-leave-active {
-  position: absolute;
-  width: 100%;
-}
-.joblist-enter-active, .joblist-leave-active {
-  transition: all .3s;
-}
-.joblist-enter, .joblist-leave-to {
-  opacity: 0;
-}
-.joblist-move {
-  transition: all .3s;
-}
-
 </style>
 
 <template>
 
 <v-app>
-    <v-toolbar class="blue" dark app>
-        <v-btn icon @click="$router.push({ name: 'jobs'})">
-            <v-icon>home</v-icon>
-        </v-btn>
+    <v-app-bar color="blue" dark app elevate-on-scroll>
+        <v-app-bar-nav-icon @click="$router.push({ name: 'jobs'})">
+            <v-icon>mdi-home</v-icon>
+        </v-app-bar-nav-icon>
         <v-toolbar-title>Jobs</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-text-field style="max-width: 30em" clearable light autofocus prepend-inner-icon="search" solo label="Filter..." v-model="filter"></v-text-field>
+        <v-text-field style="max-width: 60em" hide-details solo clearable light autofocus prepend-inner-icon="mdi-magnify" label="Filter..." v-model="filter"></v-text-field>
         <v-spacer></v-spacer>
-        <v-menu bottom left>
-              <v-btn dark icon v-on="on" slot="activator">
-                <v-icon>more_vert</v-icon>
-              </v-btn>
-
+        <v-menu bottom left offset-y>
+            <template v-slot:activator="{ on, attrs }">
+                <v-btn dark icon v-bind="attrs" v-on="on">
+                    <v-icon>mdi-more_vert</v-icon>
+                </v-btn>
+            </template>
             <v-list light>
-              <v-list-tile @click="reloadPHP()">
-                <v-list-tile-title>Reload PHP tasks</v-list-tile-title>
-              </v-list-tile>
+                <v-list-item @click="reloadPHP()">
+                    <v-list-item-title>Reload PHP tasks</v-list-item-title>
+                </v-list-item>
             </v-list>
         </v-menu>
-    </v-toolbar>
-
-    <main>
-        <v-content>
-                <v-container fluid grid-list-lg>
-                    <v-layout row wrap>
-                        <template v-for="(job, index) in filtered_jobs">
-                            <v-flex v-bind:key="job.Name" xs12 sm6 md4 lg3>   
-                                <v-card>
-                                    <v-card-title primary-title>
-                                        <div>
-                                            <div class="headline">
-                                                {{ job.Name }}
-                                            </div>
-                                            <div class="grey--text">
-                                                Status: {{ job.Status }}
-                                            </div>
-                                            <div class="grey--text">Type: {{ job.Type }}</div>
-                                        </div>
-                                    </v-card-title>
-                                    <alloc-summary :summary="job.SummaryTotal"></alloc-summary>
-                                    <v-card-actions>
-                                        <v-spacer></v-spacer>
-                                        <v-btn flat @click="$router.push({ name: 'job', params: { jobid: job.Name }})">
-                                            <v-icon>search</v-icon>
-                                            <span>Details</span>
-                                        </v-btn>
-                                    </v-card-actions>
-                                </v-card>
-                            </v-flex>
-                        </template>
-                    </v-layout>
-                </v-container>
-        </v-content>
-    </main>
-
+    </v-app-bar>
+    
+    <v-main>
+        <v-container>
+            <v-list two-line>
+                <v-list-item-group v-model="selectedItem" color="primary">
+                    <v-list-item v-for="job in filtered_jobs" :key="job.Name" @click="$router.push({ name: 'job', params: { jobid: job.Name }})">
+                        <v-list-item-avatar>
+                            <v-icon class="grey lighten-1" dark>mdi-cog</v-icon>
+                        </v-list-item-avatar>
+                        <v-list-item-content>
+                            <v-list-item-title>{{ job.Name }}</v-list-item-title>
+                            <v-list-item-subtitle>{{ job.Type }} / {{ job.Status }}</v-list-item-subtitle>
+                            <alloc-summary :summary="job.SummaryTotal"></alloc-summary>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                            <v-btn icon>
+                                <v-icon>mdi-magnify</v-icon>
+                            </v-btn>
+                        </v-list-item-action>
+                    </v-list-item>
+                </v-list-item-group>
+            </v-list>
+        </v-container>
+    </v-main>
     <confirm-dialog ref="confirm"></confirm-dialog>
 </v-app>
 

@@ -1,182 +1,207 @@
 <style>
 
-
-
 </style>
 
 <template>
 
 <v-app>
-    <v-toolbar class="blue" dark app>
-        <v-btn icon @click="$router.go(-1)">
-            <v-icon>arrow_back</v-icon>
-        </v-btn>
+    <v-app-bar color="blue" dark app elevate-on-scroll>
+        <v-app-bar-nav-icon>
+            <v-tooltip right>
+                <template v-slot:activator="{ on }">
+                    <v-btn icon @click="$router.push({ name: 'jobs'})" v-on="on">
+                        <v-icon>mdi-arrow-left-circle</v-icon>
+                    </v-btn>
+                </template>
+                <span>Back to jobs list</span>
+            </v-tooltip>
+        </v-app-bar-nav-icon>
         <v-toolbar-title>Job {{ jobdata.Name }}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-tooltip left>
-            <v-btn icon v-if="jobdata.Status == 'running' || jobdata.Status == 'pending'" @click="stopJob()" slot="activator">
-                <v-icon>stop</v-icon>
-            </v-btn>
+        <v-tooltip left v-if="jobdata.Status == 'running' || jobdata.Status == 'pending'">
+            <template v-slot:activator="{ on }">
+                <v-btn icon @click="stopJob()" v-on="on">
+                    <v-icon>mdi-stop</v-icon>
+                </v-btn>
+            </template>
             <span>Stop the job</span>
         </v-tooltip>
-        <v-tooltip left>
-            <v-btn icon v-if="jobdata.Status == 'dead'" :disabled="!jobdata.Bootstrapable" @click="startJob()" slot="activator">
-                <v-icon>play_arrow</v-icon>
-            </v-btn>
+
+        <v-tooltip left v-if="jobdata.Status == 'dead'">
+            <template v-slot:activator="{ on }">
+                <v-btn icon :disabled="!jobdata.Bootstrapable" @click="startJob()" v-on="on">
+                    <v-icon>mdi-play</v-icon>
+                </v-btn>
+            </template>
             <span>Start the job</span>
         </v-tooltip>
-        <v-tooltip left>
-            <v-btn icon v-if="jobdata.Reloadable" @click="reloadJob()" :disabled="jobdata.Status != 'running'" slot="activator">
-                <v-icon>autorenew</v-icon>
-            </v-btn>
+
+        <v-tooltip left v-if="jobdata.Reloadable">
+            <template v-slot:activator="{ on }">
+                <v-btn icon @click="reloadJob()" v-on="on">
+                    <v-icon>mdi-autorenew</v-icon>
+                </v-btn>
+            </template>
             <span>Reload the job</span>
-        </v-tooltip left>
-    </v-toolbar>
+        </v-tooltip>
+    </v-app-bar>
 
-    <main>
-        <v-content>
-            <v-container fluid>
-                <v-layout row wrap>
-                    <v-flex xs12 class="mb-3">
-                        <v-card>
-                            <v-expansion-panel expand class="elevation-0" :value="[true]">
-                                <v-expansion-panel-content>
-                                    <div slot="header"><strong>Main settings</strong></div>
-                                    <v-card>
-                                        <v-card-text class="grey lighten-4">
-                                            <v-layout row wrap>
-                                                <v-flex xs4>
-                                                    <div><strong>Type:</strong> {{ jobdata.Type }}</div>
-                                                    <div><strong>Status:</strong> {{ jobdata.Status }}</div>
-                                                </v-flex>
-                                                <v-flex xs4>
-                                                    <div><strong>Region:</strong> {{ jobdata.Region }}</div>
-                                                    <div><strong>Datacenters:</strong> {{ jobdata.Datacenters ? jobdata.Datacenters.join(', ') : '' }}</div>
-                                                </v-flex>
-                                                <v-flex xs4>
-                                                    <div><strong>Bootstrapable:</strong> {{ jobdata.Bootstrapable ? 'Yes' : 'No' }}</div>
-                                                    <div><strong>Reloadable:</strong> {{ jobdata.Reloadable ? 'Yes' : 'No' }}</div>
-                                                </v-flex>
-                                            </v-layout>
-                                        </v-card-text>
-                                    </v-card>
-                                </v-expansion-panel-content>
-                                <v-expansion-panel-content>
-                                    <div slot="header"><strong>Allocations Summary</strong></div>
-                                    <v-card>
-                                        <v-card-text class="grey lighten-4">
-                                            <alloc-summary :summary="totalSummary" :text="true"></alloc-summary>
-                                        </v-card-text>
-                                    </v-card>
-                                </v-expansion-panel-content>
-                                <v-expansion-panel-content v-if="jobdata.Constraints">
-                                    <div slot="header"><strong>Constraints</strong></div>
-                                    <v-card>
-                                        <v-card-text class="grey lighten-4">
-                                            <div v-for="(constraint, index) in jobdata.Constraints" v-bind:key="constraint.LTarget">
-                                                <strong>{{ constraint.LTarget }}</strong> {{ constraint.Operand }} <strong>{{ constraint.RTarget }}</strong>
-                                            </div>
-                                        </v-card-text>
-                                    </v-card>
-                                </v-expansion-panel-content>
-                            </v-expansion-panel>
-                        </v-card>
-                    </v-flex>
-                    <v-flex xs12 class="mb-3" v-for="(tg, index) in jobdata.TaskGroups" v-bind:key="tg.Name">
-                        <v-card>
-                            <v-toolbar class="blue lighten-2" light>
-                                <v-icon>group_work</v-icon>
-                                <v-toolbar-title>Task Group <strong>{{ tg.Name }}</strong></v-toolbar-title>
-                                <v-tooltip right>
-                                    <v-btn icon @click="$router.push({ name: 'taskgroup', params: { jobid: jobid, tgid: tg.Name }})" slot="activator">
-                                        <v-icon>info_outline</v-icon>
-                                    </v-btn>
-                                    <span>Task Group details</span>
-                                </v-tooltip>
-                                <v-spacer></v-spacer>
-                                <v-tooltip left>
-                                    <v-btn icon @click="updateTaskGroupCount(tg.Name, tg.Count + 1)" slot="activator">
-                                        <v-icon>add_circle_outline</v-icon>
-                                    </v-btn>
-                                    <span>Increase wanted allocations</span>
-                                </v-tooltip>
-                                <v-tooltip left>
-                                    <v-btn icon @click="updateTaskGroupCountProtected(tg.Name, tg.Count - 1)" :disabled="tg.Count == 0" slot="activator">
-                                        <v-icon>remove_circle_outline</v-icon>
-                                    </v-btn>
-                                    <span>Decrease wanted allocations</span>
-                                </v-tooltip>
-                                <v-tooltip left>
-                                    <v-btn icon v-if="tg.Count > 0" :disabled="tg.Count == 0" @click="updateTaskGroupCountProtected(tg.Name, 0)" slot="activator">
-                                        <v-icon>stop</v-icon>
-                                    </v-btn>
-                                    <span>Stop the task group</span>
-                                </v-tooltip>
-                                <v-tooltip left>
-                                    <v-btn icon v-if="tg.Count == 0" :disabled="tg.DefaultCount == 0" @click="updateTaskGroupCount(tg.Name, tg.DefaultCount)" slot="activator">
-                                        <v-icon>play_arrow</v-icon>
-                                    </v-btn>
-                                    <span>Stop the task group</span>
-                                </v-tooltip>
-                                <v-tooltip left>
-                                    <v-btn icon v-if="tg.Reloadable" @click="reloadTaskGroup(tg.Name)" :disabled="tg.Name in allocdata ? allocdata[tg.Name].Summary['running'] == 0 : true" slot="activator">
-                                        <v-icon>autorenew</v-icon>
-                                    </v-btn>
-                                    <span>Reload the task group</span>
-                                </v-tooltip>
-                            </v-toolbar>
-                            <v-card-text>
-                                <alloc-summary :summary="summary[tg.Name]" :wanted="tg.Count" :text="true"></alloc-summary>
-                            </v-card-text>
-                            <v-toolbar class="blue lighten-4 elevation-1" light dense v-if="tg.Name in allocdata">
-                                <v-toolbar-title>Allocations</v-toolbar-title>
-                                <v-spacer></v-spacer>
+    <v-main>
+        <v-container>
+            <v-sheet class="mb-5">
+                <v-expansion-panels accordion multiple :value="[0]">
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>
+                            <strong>Settings</strong>
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <v-container>
+                                <v-layout row wrap>
+                                    <v-flex xs4>
+                                        <div><strong>Type:</strong> {{ jobdata.Type }}</div>
+                                        <div><strong>Status:</strong> {{ jobdata.Status }}</div>
+                                    </v-flex>
+                                    <v-flex xs4>
+                                        <div><strong>Region:</strong> {{ jobdata.Region }}</div>
+                                        <div><strong>Datacenters:</strong> {{ jobdata.Datacenters ? jobdata.Datacenters.join(', ') : '' }}</div>
+                                    </v-flex>
+                                    <v-flex xs4>
+                                        <div><strong>Bootstrapable:</strong> {{ jobdata.Bootstrapable ? 'Yes' : 'No' }}</div>
+                                        <div><strong>Reloadable:</strong> {{ jobdata.Reloadable ? 'Yes' : 'No' }}</div>
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>
+                            <strong>Allocations Summary</strong>
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content>
+                            <alloc-summary :summary="totalSummary" :text="true"></alloc-summary>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                    <v-expansion-panel>
+                        <v-expansion-panel-header>
+                            <strong>Constraints</strong>
+                        </v-expansion-panel-header>
+                        <v-expansion-panel-content v-if="jobdata.Constraints">
+                            <div v-for="constraint in jobdata.Constraints" v-bind:key="constraint.LTarget">
+                                <strong>{{ constraint.LTarget }}</strong> {{ constraint.Operand }} <strong>{{ constraint.RTarget }}</strong>
+                            </div>
+                        </v-expansion-panel-content>
+                    </v-expansion-panel>
+                </v-expansion-panels>
+            </v-sheet>
 
-                                <v-menu offset-y :close-on-content-click="false">
-                                    <v-tooltip left slot="activator">
-                                        <v-btn light icon slot="activator">
-                                            <v-icon>filter_list</v-icon>
-                                        </v-btn>
-                                        <span>Filter allocations</span>
-                                    </v-tooltip>
-                                    <v-list>
-                                        <v-list-tile v-for="(status, index) in statuses" v-bind:key="index" @click="status.filter = !status.filter">
-                                            <v-list-tile-action>
-                                                <v-switch v-model="status.filter" @click.stop="status.filter = !status.filter"></v-switch>
-                                            </v-list-tile-action>
-                                            <v-list-tile-title>{{ status.title }}</v-list-tile-title>
-                                        </v-list-tile>
-                                    </v-list>
-                                </v-menu>
-                            </v-toolbar>
-                            <v-list two-line v-if="tg.Name in allocdata">
-                                <template v-for="(allocation, index) in allocdata[tg.Name].Allocations">
-                                    <v-list-tile avatar v-bind:key="allocation.ID" v-if="statuses[allocation.ClientStatus].filter" @click.stop="$router.push({ name: 'allocation', params: { allocid: allocation.ID }})">
-                                        <v-list-tile-avatar>
-                                            <v-icon> {{ statuses[allocation.ClientStatus].icon }} </v-icon>
-                                        </v-list-tile-avatar>
-                                        <v-list-tile-content>
-                                            <v-list-tile-title>{{ allocation.Name }}</v-list-tile-title>
-                                            <v-list-tile-sub-title>Status: {{ allocation.ClientStatus }} on {{ nodes[allocation.NodeID].Name }}</v-list-tile-sub-title>
-                                            <v-list-tile-sub-title>Created {{ allocation.CreateTime | formatNanoTimestampRelative }} - Last event : {{ allocation.LastEvent.Type }} ({{ allocation.LastEvent.Time | formatNanoTimestampRelative }})</v-list-tile-sub-title>
-                                        </v-list-tile-content>
-                                        <v-list-tile-action>
-                                            <v-tooltip left>
-                                                <v-btn icon v-if="allocation.ClientStatus == 'running' && tg.Reloadable" @click.stop="reloadAllocation(allocation.Name)" slot="activator">
-                                                    <v-icon>autorenew</v-icon>
-                                                </v-btn>
-                                                <span>Reload the allocation</span>
-                                            </v-tooltip>
-                                        </v-list-tile-action>
-                                    </v-list-tile>
+            <v-card v-for="tg in jobdata.TaskGroups" v-bind:key="tg.Name" class="mb-5">
+                <v-app-bar class="blue lighten-2" light>
+                    <v-app-bar-nav-icon>
+                    <v-tooltip right>
+                        <template v-slot:activator="{ on }">
+                            <v-btn icon @click="$router.push({ name: 'taskgroup', params: { jobid: jobid, tgid: tg.Name }})" v-on="on">
+                                <v-icon>mdi-information-outline</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Task Group details</span>
+                    </v-tooltip>                        </v-app-bar-nav-icon>
+                    <v-toolbar-title>Task Group <strong>{{ tg.Name }}</strong></v-toolbar-title>
+
+                    <v-spacer></v-spacer>
+                    <v-tooltip left>
+                        <template v-slot:activator="{ on }">
+                            <v-btn icon @click="updateTaskGroupCount(tg.Name, tg.Count + 1)" v-on="on">
+                                <v-icon>mdi-plus-circle-outline</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Increase wanted allocations</span>
+                    </v-tooltip>
+                    <v-tooltip left>
+                        <template v-slot:activator="{ on }">
+                            <v-btn icon @click="updateTaskGroupCountProtected(tg.Name, tg.Count - 1)" :disabled="tg.Count == 0" v-on="on">
+                                <v-icon>mdi-minus-circle-outline</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Decrease wanted allocations</span>
+                    </v-tooltip>
+                    <v-tooltip left v-if="tg.Count > 0">
+                        <template v-slot:activator="{ on }">
+                            <v-btn icon :disabled="tg.Count == 0" @click="updateTaskGroupCountProtected(tg.Name, 0)" v-on="on">
+                                <v-icon>mdi-stop</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Stop the task group</span>
+                    </v-tooltip>
+                    <v-tooltip left v-if="tg.Count == 0">
+                        <template v-slot:activator="{ on }">
+                            <v-btn icon :disabled="tg.DefaultCount == 0" @click="updateTaskGroupCount(tg.Name, tg.DefaultCount)" v-on="on">
+                                <v-icon>mdi-play</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Stop the task group</span>
+                    </v-tooltip>
+                    <v-tooltip left v-if="tg.Reloadable">
+                        <template v-slot:activator="{ on }">
+                            <v-btn icon @click="reloadTaskGroup(tg.Name)" :disabled="tg.Name in allocdata ? allocdata[tg.Name].Summary['running'] == 0 : true" v-on="on">
+                                <v-icon>mdi-autorenew</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Reload the task group</span>
+                    </v-tooltip>
+                </v-app-bar>
+                <v-card-text>
+                    <alloc-summary :summary="summary[tg.Name]" :wanted="tg.Count" :text="true"></alloc-summary>
+                </v-card-text>
+                <v-app-bar class="blue lighten-4 elevation-1" light dense v-if="tg.Name in allocdata">
+                    <v-toolbar-title>Allocations</v-toolbar-title>
+                    <v-spacer></v-spacer>
+
+                    <v-menu offset-y :close-on-content-click="false">
+                        <template v-slot:activator="{ on: onMenu }">
+                            <v-tooltip left>
+                                <template v-slot:activator="{ on: onTooltip }">
+                                    <v-btn light icon v-on="{...onMenu, ...onTooltip}">
+                                        <v-icon>mdi-filter-variant</v-icon>
+                                    </v-btn>
                                 </template>
-                            </v-list>
-                        </v-card>
-                    </v-flex>
-                </v-layout>
-            </v-container>
-        </v-content>
-    </main>
+                                <span>Filter</span>
+                            </v-tooltip>
+                        </template>
+                        <v-list>
+                            <v-list-item v-for="(status, index) in statuses" v-bind:key="index" @click="status.filter = !status.filter">
+                                <v-list-item-action>
+                                    <v-switch v-model="status.filter" @click.stop="status.filter = !status.filter"></v-switch>
+                                </v-list-item-action>
+                                <v-list-item-title>{{ status.title }}</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </v-app-bar>
+                <v-list two-line v-if="tg.Name in allocdata">
+                    <v-list-item v-for="allocation in allocdata[tg.Name].Allocations" v-bind:key="allocation.ID" v-if="statuses[allocation.ClientStatus].filter" @click.stop="$router.push({ name: 'allocation', params: { allocid: allocation.ID }})">
+                        <v-list-item-avatar>
+                            <v-icon> {{ statuses[allocation.ClientStatus].icon }} </v-icon>
+                        </v-list-item-avatar>
+                        <v-list-item-content>
+                            <v-list-item-title>{{ allocation.Name }}</v-list-item-title>
+                            <v-list-item-subtitle>Status: {{ allocation.ClientStatus }} on {{ nodes[allocation.NodeID].Name }}</v-list-item-subtitle>
+                            <v-list-item-subtitle>Created {{ allocation.CreateTime | formatNanoTimestampRelative }} - Last event : {{ allocation.LastEvent.Type }} ({{ allocation.LastEvent.Time | formatNanoTimestampRelative }})</v-list-item-subtitle>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                            <v-tooltip left>
+                                <template v-slot:activator="{ on }">
+                                    <v-btn icon v-if="allocation.ClientStatus == 'running' && tg.Reloadable" @click.stop="reloadAllocation(allocation.Name)" v-on="on">
+                                        <v-icon>mdi-autorenew</v-icon>
+                                    </v-btn>
+                                </template>
+                                <span>Reload the allocation</span>
+                            </v-tooltip>
+                        </v-list-item-action>
+                    </v-list-item>
+                </v-list>
+            </v-card>
+        </v-container>
+    </v-main>
 
     <v-snackbar v-for="(snack, index) in snacks" v-bind:key="index" v-model="snack.visible" :timeout="snack.timeout" :success="snack.context === 'success'" :info="snack.context === 'info'" :warning="snack.context === 'warning'" :error="snack.context === 'error'">
         {{ snack.message }}
@@ -210,27 +235,27 @@ export default {
                 pending: {
                     title: 'Pending',
                     filter: true,
-                    icon: 'hourglass_empty'
+                    icon: 'mdi-timer-sand'
                 },
                 running: {
                     title: 'Running',
                     filter: true,
-                    icon: 'play_arrow'
+                    icon: 'mdi-play'
                 },
                 complete: {
                     title: 'Complete',
                     filter: true,
-                    icon: 'done'
+                    icon: 'mdi-check'
                 },
                 failed: {
                     title: 'Failed',
                     filter: true,
-                    icon: 'error'
+                    icon: 'mdi-alert-circle-outline'
                 },
                 lost: {
                     title: 'Lost',
                     filter: true,
-                    icon: 'help_outline'
+                    icon: 'mdi-help-circle-outline'
                 }
             },
             watcher_nodes: null,

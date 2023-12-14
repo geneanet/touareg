@@ -5,54 +5,55 @@
 <template>
 
 <v-app>
-    <v-toolbar class="blue" dark app>
-        <v-btn icon @click="$router.go(-1)">
-            <v-icon>arrow_back</v-icon>
-        </v-btn>
+    <v-app-bar color="blue" dark app elevate-on-scroll>
+        <v-app-bar-nav-icon>
+            <v-tooltip right>
+                <template v-slot:activator="{ on }">
+                    <v-btn icon @click="$router.push({ name: 'job', params: { jobid: allocation.Job.Name } })" v-on="on">
+                        <v-icon>mdi-arrow-left-circle</v-icon>
+                    </v-btn>
+                </template>
+                <span>Back to job</span>
+            </v-tooltip>
+        </v-app-bar-nav-icon>
         <v-toolbar-title>Allocation {{ allocation.Name }}</v-toolbar-title>
-    </v-toolbar>
+    </v-app-bar>
 
-    <main>
-        <v-content>
-            <v-container fluid>
-                <v-layout row wrap>
-                    <v-flex xs12>
-                        <v-card>
-                            <v-card-text>
-                                <v-layout row wrap>
-                                    <v-flex xs12>
-                                        <v-select v-bind:items="tasks" v-model="task" label="Task"></v-select>
-                                    </v-flex>
-                                    <v-flex xs12>
-                                        <v-tabs dark v-model="active_tab" :scrollable="false" color="blue" class="elevation-1">
-                                            <v-tab :key="'events'" ripple>Events</v-tab>
-                                            <v-tab :key="'stdout'" ripple>stdout</v-tab>
-                                            <v-tab :key="'stderr'" ripple>stderr</v-tab>
-                                            <v-tab-item :key="'events'">
-                                                <v-data-table :headers="events_headers" :items="allocation.TaskStates[task].Events" v-if="allocation.TaskStates" hide-actions>
-                                                    <template slot="items" slot-scope="props">
-                                                        <td>{{ props.item.Time | formatNanoTimestamp }}</td>
-                                                        <td>{{ props.item.Type }}</td>
-                                                        <td>{{ props.item.DisplayMessage }}</td>
-                                                    </template>
-                                                </v-data-table>
-                                            </v-tab-item>
-                                            <v-tab-item :key="'stdout'" lazy>
-                                                <task-console :task="task" :allocid="allocid" :type="'stdout'"></task-console>
-                                            </v-tab-item>
-                                            <v-tab-item :key="'stderr'" lazy>
-                                                <task-console :task="task" :allocid="allocid" :type="'stderr'"></task-console>
-                                            </v-tab-item>
-                                        </v-tabs>
-                                    </v-flex>
-                                </v-layout>
-                            </v-card-text>
-                        </v-card>
-                    </v-flex>
-                </v-layout>
-            </v-container>
-        </v-content>
-    </main>
+    <v-main>
+        <v-container>
+            <v-card class="pa-3">
+                <v-card-text>
+                    <v-layout row wrap>
+                        <v-flex xs12>
+                            <v-select v-bind:items="tasks" v-model="task" label="Task"></v-select>
+                        </v-flex>
+                        <v-flex xs12>
+                            <v-tabs v-model="active_tab">
+                                <v-tab :key="'events'" ripple>Events</v-tab>
+                                <v-tab :key="'stdout'" ripple>stdout</v-tab>
+                                <v-tab :key="'stderr'" ripple>stderr</v-tab>
+                                <v-tab-item :key="'events'">
+                                    <v-data-table :headers="events_headers" :items="allocation.TaskStates[task].Events" v-if="allocation.TaskStates" hide-actions>
+                                        <template slot="items" slot-scope="props">
+                                            <td>{{ props.item.Time | formatNanoTimestamp }}</td>
+                                            <td>{{ props.item.Type }}</td>
+                                            <td>{{ props.item.DisplayMessage }}</td>
+                                        </template>
+                                    </v-data-table>
+                                </v-tab-item>
+                                <v-tab-item :key="'stdout'" lazy>
+                                    <task-console :task="task" :allocid="allocid" :type="'stdout'"></task-console>
+                                </v-tab-item>
+                                <v-tab-item :key="'stderr'" lazy>
+                                    <task-console :task="task" :allocid="allocid" :type="'stderr'"></task-console>
+                                </v-tab-item>
+                            </v-tabs>
+                        </v-flex>
+                    </v-layout>
+                </v-card-text>
+            </v-card>
+        </v-container>
+    </v-main>
 </v-app>
 
 </template>
