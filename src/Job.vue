@@ -185,7 +185,7 @@
                         <v-list-item-content>
                             <v-list-item-title>{{ allocation.Name }}</v-list-item-title>
                             <v-list-item-subtitle>Status: {{ allocation.ClientStatus }} on {{ nodes[allocation.NodeID].Name }}</v-list-item-subtitle>
-                            <v-list-item-subtitle>Created {{ allocation.CreateTime | formatNanoTimestampRelative }} - Last event : {{ allocation.LastEvent.Type }} ({{ allocation.LastEvent.Time | formatNanoTimestampRelative }})</v-list-item-subtitle>
+                            <v-list-item-subtitle>Created {{ allocation.CreateTime | formatNanoTimestampRelative }} - Last event : {{ allocation.LastEvent.Type }} ({{ allocation.LastEvent.Time | formatNanoTimestampRelative }})</v-list-item-subtitle>
                         </v-list-item-content>
                         <v-list-item-action>
                             <v-tooltip left>
