@@ -34,11 +34,7 @@
                                 <v-tab :key="'stderr'" ripple>stderr</v-tab>
                                 <v-tab-item :key="'events'">
                                     <v-data-table :headers="events_headers" :items="allocation.TaskStates[task].Events" v-if="allocation.TaskStates" hide-actions>
-                                        <template slot="items" slot-scope="props">
-                                            <td>{{ props.item.Time | formatNanoTimestamp }}</td>
-                                            <td>{{ props.item.Type }}</td>
-                                            <td>{{ props.item.DisplayMessage }}</td>
-                                        </template>
+                                        <template v-slot:item.Time="{ item }">{{ item.Time | formatNanoTimestamp }}</template>
                                     </v-data-table>
                                 </v-tab-item>
                                 <v-tab-item :key="'stdout'" lazy>
