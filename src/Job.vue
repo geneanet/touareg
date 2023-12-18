@@ -160,7 +160,7 @@
                         <template v-slot:activator="{ on: onMenu }">
                             <v-tooltip left>
                                 <template v-slot:activator="{ on: onTooltip }">
-                                    <v-btn light icon v-on="{...onMenu, ...onTooltip}">
+                                    <v-btn light icon v-on="Object.assign(onMenu, onTooltip)">
                                         <v-icon>mdi-filter-variant</v-icon>
                                     </v-btn>
                                 </template>
