@@ -33,7 +33,7 @@ function NomadWatcher(url) {
         }
 
         this._watcher.then(request => {
-            if (request.status < 200 || request.status >= 300) {
+            if (request.status < 200 || request.status >= 300) {
                 this._callback_error.forEach(callback => { callback('Unexpected status code: ' + request.status) })
             }
             if (request.headers['x-nomad-index']) {

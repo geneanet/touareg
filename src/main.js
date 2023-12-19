@@ -1,66 +1,65 @@
 import App from './App.vue'
-import Jobs from './Jobs.vue'
-import Job from './Job.vue'
+import JobsList from './JobsList.vue'
+import JobDetails from './JobDetails.vue'
 import TaskGroup from './TaskGroup.vue'
-import Allocation from './Allocation.vue'
+import AllocationDetails from './AllocationDetails.vue'
 import ConfirmDialog from './ConfirmDialog.vue'
 import TaskConsole from './TaskConsole.vue'
 import AllocSummary from './AllocSummary.vue'
 
-import(/* webpackChunkName: "vuetify-css" */'../node_modules/vuetify/dist/vuetify.min.css')
-import(/* webpackChunkName: "mdi" */ '@mdi/font/css/materialdesignicons.css')
+import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import moment from 'moment'
 
-var pVue = import(/* webpackChunkName: "vue" */ 'vue')
-var pVueRouter = import(/* webpackChunkName: "vue-router" */ 'vue-router')
-var pVuetify = import(/* webpackChunkName: "vuetify" */ 'vuetify')
-var pMoment = import(/* webpackChunkName: "moment" */ 'moment')
+// import '@mdi/font/css/materialdesignicons.css'
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
 
-Promise.all([pVue, pVueRouter, pVuetify, pMoment]).then(promises => {
-    var Vue = promises[0].default
-    var VueRouter = promises[1].default
-    var Vuetify = promises[2].default
-    var moment = promises[3]
+const app = createApp(App)
+const router = createRouter({
+    history: createWebHistory(),
+    routes: [
+        { name:'jobs', path: '/', component: JobsList, meta: { title: 'Jobs' } },
+        { name: 'job', path: '/job/:jobid', component: JobDetails, props: true, meta: { title: 'Job' } },
+        { name: 'taskgroup', path: '/job/:jobid/:tgid', component: TaskGroup, props: true, meta: { title: 'Task Group' } },
+        { name: 'allocation', path: '/allocation/:allocid', component: AllocationDetails, props: true }
+    ]
+})  
+const vuetify = createVuetify({
+    icons: {
+        defaultSet: 'mdi',
+        aliases,
+        sets: {
+            mdi,
+        },
+    },
+})
 
-    Vue.use(Vuetify)
-    Vue.use(VueRouter)
-
-    Vue.component('confirm-dialog', ConfirmDialog)
-    Vue.component('task-console', TaskConsole)
-    Vue.component('alloc-summary', AllocSummary)
-
-    Vue.filter('formatNanoTimestamp', function(value) {
+app.config.globalProperties.$filters = {
+    formatNanoTimestamp(value) {
         if (value) {
             return moment.unix(Math.floor(value / 1000000000)).format('DD/MM/YYYY HH:mm:ss')
         }
-    })
+    },
 
-    Vue.filter('formatNanoTimestampRelative', function(value) {
+    formatNanoTimestampRelative(value) {
         if (value) {
             return moment.unix(Math.floor(value / 1000000000)).fromNow()
         }
-    })
+    },
+}
 
-    const routes = [
-        { name:'jobs', path: '/', component: Jobs, meta: { title: 'Jobs' } },
-        { name: 'job', path: '/job/:jobid', component: Job, props: true, meta: { title: 'Job' } },
-        { name: 'taskgroup', path: '/job/:jobid/:tgid', component: TaskGroup, props: true, meta: { title: 'Task Group' } },
-        { name: 'allocation', path: '/allocation/:allocid', component: Allocation, props: true }
-    ]
+app.use(router)
+app.use(vuetify)
 
-    const router = new VueRouter({
-        routes: routes
-    })
+app.component('confirm-dialog', ConfirmDialog)
+app.component('task-console', TaskConsole)
+app.component('alloc-summary', AllocSummary)
 
-    const vuetify = new Vuetify({
-        icons: {
-            iconfont: 'mdi',
-        },
-    })
+app.config.globalProperties.nomad_url = window.nomad_url
+app.config.globalProperties.nomad_node_url = window.nomad_node_url
+app.config.globalProperties.consul_url = window.consul_urlrl
 
-    let app = new Vue({
-        vuetify: vuetify,
-        router: router,
-        el: '#app',
-        render: h => h(App)
-    })
-})
+app.mount('#app')
+

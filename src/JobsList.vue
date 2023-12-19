@@ -4,19 +4,19 @@
 
 <template>
 
-<v-app>
-    <v-app-bar color="blue" dark app elevate-on-scroll>
+    <v-app-bar color="blue" scroll-behavior="elevate">
         <v-app-bar-nav-icon @click="$router.push({ name: 'jobs'})">
-            <v-icon>mdi-home</v-icon>
+            <v-icon :icon="mdiHome"/>
         </v-app-bar-nav-icon>
         <v-toolbar-title>Jobs</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-text-field style="max-width: 60em" hide-details solo clearable light autofocus prepend-inner-icon="mdi-magnify" label="Filter..." v-model="filter"></v-text-field>
+        <v-text-field hide-details variant="solo" density="compact" autofocus clearable :prepend-inner-icon="mdiMagnify" placeholder="Filter..." v-model="filter"></v-text-field>
         <v-spacer></v-spacer>
-        <v-menu bottom left offset-y>
-            <template v-slot:activator="{ on, attrs }">
-                <v-btn dark icon v-bind="attrs" v-on="on">
-                    <v-icon>mdi-dots-vertical</v-icon>
+        <v-spacer></v-spacer>
+        <v-menu location="bottom left">
+            <template v-slot:activator="{ props }">
+                <v-btn icon v-bind="props">
+                    <v-icon :icon="mdiDotsVertical"/>
                 </v-btn>
             </template>
             <v-list light>
@@ -29,31 +29,30 @@
     
     <v-main>
         <v-container>
-            <v-list two-line>
-                <v-list-item-group v-model="selectedItem" color="primary">
-                    <v-list-item v-for="job in filtered_jobs" :key="job.Name" @click="$router.push({ name: 'job', params: { jobid: job.Name }})">
-                        <v-list-item-avatar>
-                            <v-icon class="grey lighten-1" dark>mdi-cog</v-icon>
-                        </v-list-item-avatar>
-                        <v-list-item-content>
-                            <v-list-item-title>{{ job.Name }}</v-list-item-title>
-                            <v-list-item-subtitle>{{ job.Type }} / {{ job.Status }}</v-list-item-subtitle>
-                            <alloc-summary :summary="job.SummaryTotal"></alloc-summary>
-                        </v-list-item-content>
-                        <v-list-item-action>
-                            <v-btn icon>
-                                <v-icon>mdi-magnify</v-icon>
-                            </v-btn>
-                        </v-list-item-action>
-                    </v-list-item>
-                </v-list-item-group>
+            <v-list lines="two">
+                <v-list-item v-for="job in filtered_jobs" :key="job.Name" @click="$router.push({ name: 'job', params: { jobid: job.Name }})">
+                    <template v-slot:prepend>
+                        <v-icon :icon="mdiCog"/>
+                    </template>
+                    <v-list-item-title>{{ job.Name }}</v-list-item-title>
+                    <v-list-item-subtitle>{{ job.Type }} / {{ job.Status }}</v-list-item-subtitle>
+                    <alloc-summary :summary="job.SummaryTotal"></alloc-summary>
+                </v-list-item>
             </v-list>
         </v-container>
     </v-main>
-    <confirm-dialog ref="confirm"></confirm-dialog>
-</v-app>
+    <confirm-dialog ref="confirm"/>
 
 </template>
+
+<script setup>
+import {
+    mdiHome,
+    mdiDotsVertical,
+    mdiCog,
+    mdiMagnify
+} from '@mdi/js'
+</script>
 
 <script>
 
@@ -61,7 +60,7 @@ import NomadWatcher from './NomadWatcher.js'
 import Axios from 'axios'
 
 export default {
-    name: 'jobs',
+    name: 'JobsList',
     data() {
         return {
             dialog_confirm: {
@@ -82,7 +81,7 @@ export default {
     created: function() {
         let that = this
 
-        this.watcher_jobs = new NomadWatcher(nomad_url + '/v1/jobs')
+        this.watcher_jobs = new NomadWatcher(this.nomad_url + '/v1/jobs')
         this.watcher_jobs.onUpdate(jobs => {
             that.jobs = jobs
             that.jobs.forEach(job => {
@@ -107,20 +106,18 @@ export default {
         })
         this.watcher_jobs.watch()
     },
-    destroyed() {
+    unmounted() {
         if (this.watcher_jobs) {
             this.watcher_jobs.cancel()
         }
     },
     methods: {
         reloadPHP() {
-            let that = this
-
             this.$refs.confirm.confirm(
                 "Restart PHP tasks ?",
                 "You are about to restart all PHP tasks. Are you sure you want to do that ?",
                 function() {
-                    Axios.put(consul_url + '/v1/kv/nomad_reload/php', Date.now()).catch(error => {
+                    Axios.put(this.consul_url + '/v1/kv/nomad_reload/php', Date.now()).catch(error => {
                         this.addSnack('Error while reloading PHP tasks (' + error + ').', 'error')
                     })
                 }

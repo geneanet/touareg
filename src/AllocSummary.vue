@@ -38,21 +38,23 @@
 
 <template>
 
-<v-container fluid grid-list-xs style="padding: 0">
-    <v-layout row justify-space-around>
-        <v-flex class="text-center" v-if="wanted">
+<v-container class="pa-0">
+    <v-row v-if="text" dense>
+        <v-col class="text-center" v-if="wanted">
             <div>Wanted</div><strong>{{ wanted }}</strong>
-        </v-flex>
-        <v-flex class="text-center" v-for="state in ['Queued', 'Starting', 'Running', 'Complete', 'Failed', 'Lost']" v-bind:key="state" v-if="text">
-            <div>{{ state }}</div><strong>{{ summary[state] }}</strong>
-        </v-flex>
-    </v-layout>
-    <v-layout row>
-        <v-flex xs12>
-            <div v-if="total > 0" v-for="state in ['Queued', 'Starting', 'Running', 'Complete', 'Failed', 'Lost']" v-bind:key="state" class="alloc-state"  v-bind:class="['alloc-state-' + state]" v-bind:style="{'width': (summary[state] / total * 100) + '%'}" v-bind:title="state + ': ' + summary[state]"/>
-            <div v-if="total == 0" class="alloc-state alloc-empty" style="width: 100%" title="No allocation"/>
-        </v-flex>
-    </v-layout>
+        </v-col>
+        <v-col class="text-center" v-for="state in ['Queued', 'Starting', 'Running', 'Complete', 'Failed', 'Lost']" v-bind:key="state">
+            <div>{{ state }}</div><strong>{{ summary_safe[state] }}</strong>
+        </v-col>
+    </v-row>
+    <v-row dense>
+        <v-col v-if="total > 0">
+            <div v-for="state in ['Queued', 'Starting', 'Running', 'Complete', 'Failed', 'Lost']" v-bind:key="state" class="alloc-state"  v-bind:class="['alloc-state-' + state]" v-bind:style="{'width': (summary_safe[state] / total * 100) + '%'}" v-bind:title="state + ': ' + summary_safe[state]"/>
+        </v-col>
+        <v-col v-if="total == 0">
+            <div class="alloc-state alloc-empty" style="width: 100%" title="No allocation"/>
+        </v-col>
+    </v-row>
 </v-container>
 
 </template>
@@ -64,7 +66,25 @@ export default {
     props: ['summary', 'wanted', 'text'],
     computed: {
         total: function () {
-            return this.summary['Queued'] + this.summary['Starting'] + this.summary['Running'] + this.summary['Complete'] + this.summary['Failed'] + this.summary['Lost']
+            if (this.summary) {
+                return this.summary['Queued'] + this.summary['Starting'] + this.summary['Running'] + this.summary['Complete'] + this.summary['Failed'] + this.summary['Lost']
+            } else {
+                return 0
+            }
+        },
+        summary_safe: function () {
+            if (this.summary) {
+                return this.summary
+            } else {
+                return {
+                    'Queued': 0,
+                    'Starting': 0,
+                    'Running': 0,
+                    'Complete': 0,
+                    'Failed': 0,
+                    'Lost': 0,
+                }
+            }
         }
     }
 }
