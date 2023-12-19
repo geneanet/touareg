@@ -17,6 +17,9 @@
         </v-app-bar-nav-icon>
         <v-toolbar-title>Job {{ jobdata.Name }}</v-toolbar-title>
         <v-spacer></v-spacer>
+        <v-text-field hide-details variant="solo" density="compact" autofocus clearable :prepend-inner-icon="mdiMagnify" placeholder="Filter..." v-model="filter"></v-text-field>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
         <v-tooltip location="left" v-if="jobdata.Status == 'running' || jobdata.Status == 'pending'">
             <template v-slot:activator="{ props }">
                 <v-btn icon @click="stopJob()" v-bind="props">
@@ -93,7 +96,7 @@
                 </v-expansion-panels>
             </v-sheet>
 
-            <v-card v-for="tg in jobdata.TaskGroups" v-bind:key="tg.Name" class="mb-5">
+            <v-card v-for="tg in filtered_taskgroups" v-bind:key="tg.Name" class="mb-5">
                 <v-toolbar class="bg-blue-lighten-2" light>
                     <v-tooltip location="right">
                         <template v-slot:activator="{ props }">
@@ -196,6 +199,7 @@ import {
     mdiCheck,
     mdiAlertCircleOutline,
     mdiHelpCircleOutline,
+    mdiMagnify
 } from '@mdi/js'
 </script>
 
@@ -209,6 +213,7 @@ export default {
     props: ['jobid'],
     data() {
         return {
+            filter: "",
             dialog_confirm: {
                 show: false
             },
@@ -295,6 +300,15 @@ export default {
                 }
             }
             return stats
+        },
+        filtered_taskgroups: function () {
+            if (this.jobdata.TaskGroups) {
+                return this.jobdata.TaskGroups.filter(tg => {
+                    return (!this.filter || tg.Name.toLowerCase().includes(this.filter.toLowerCase()))
+                })
+            } else {
+                return []
+            }
         }
     },
     methods: {
