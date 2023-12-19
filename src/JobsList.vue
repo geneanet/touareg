@@ -19,8 +19,9 @@
                     <v-icon :icon="mdiDotsVertical"/>
                 </v-btn>
             </template>
-            <v-list light>
+            <v-list slim>
                 <v-list-item @click="reloadPHP()">
+                    <template v-slot:prepend><v-icon :icon="mdiAutorenew"></v-icon></template>
                     <v-list-item-title>Reload PHP tasks</v-list-item-title>
                 </v-list-item>
             </v-list>
@@ -50,7 +51,8 @@ import {
     mdiHome,
     mdiDotsVertical,
     mdiCog,
-    mdiMagnify
+    mdiMagnify,
+    mdiAutorenew
 } from '@mdi/js'
 </script>
 
