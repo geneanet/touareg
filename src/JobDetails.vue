@@ -321,6 +321,7 @@ export default {
             }
             this.watcher_job = new NomadWatcher(this.nomad_url + '/v1/job/' + jobid)
             this.watcher_job.onUpdate(jobdata => {
+                console.log(jobdata)
                 jobdata.Reloadable = false
                 jobdata.Bootstrapable = false
                 jobdata.TaskGroups.forEach(taskgroup => {
@@ -332,12 +333,14 @@ export default {
                     }
                     taskgroup.Reloadable = false
                     taskgroup.Tasks.forEach(task => {
-                        task.Templates.forEach(tpl => {
-                            if (tpl.DestPath == 'local/reload_token') {
-                                taskgroup.Reloadable = true
-                                jobdata.Reloadable = true
-                            }
-                        })
+                        if (task.Templates) {
+                            task.Templates.forEach(tpl => {
+                                if (tpl.DestPath == 'local/reload_token') {
+                                    taskgroup.Reloadable = true
+                                    jobdata.Reloadable = true
+                                    }
+                            })
+                        }
                     })
                 })
                 that.jobdata = jobdata
