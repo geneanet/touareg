@@ -59,7 +59,7 @@ app.component('alloc-summary', AllocSummary)
 
 app.config.globalProperties.nomad_url = window.nomad_url
 app.config.globalProperties.nomad_node_url = window.nomad_node_url
-app.config.globalProperties.consul_url = window.consul_urlrl
+app.config.globalProperties.consul_url = window.consul_url
 
 app.mount('#app')
 
