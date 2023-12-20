@@ -115,11 +115,12 @@ export default {
     },
     methods: {
         reloadPHP() {
+            var that = this
             this.$refs.confirm.confirm(
                 "Restart PHP tasks ?",
                 "You are about to restart all PHP tasks. Are you sure you want to do that ?",
-                function() {
-                    Axios.put(this.consul_url + '/v1/kv/nomad_reload/php', Date.now()).catch(error => {
+                function () {
+                    Axios.put(that.consul_url + '/v1/kv/nomad_reload/php', Date.now()).catch(error => {
                         this.addSnack('Error while reloading PHP tasks (' + error + ').', 'error')
                     })
                 }
