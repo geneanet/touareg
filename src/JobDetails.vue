@@ -75,6 +75,28 @@
                             </v-container>
                         </v-expansion-panel-text>
                     </v-expansion-panel>
+                    <v-expansion-panel v-if="jobdata.Periodic">
+                        <v-expansion-panel-title>
+                            <strong>Periodicity</strong>
+                        </v-expansion-panel-title>
+                        <v-expansion-panel-text>
+                            <v-container>
+                                <v-row>
+                                    <v-col>
+                                        <div><strong>Enabled:</strong> {{ jobdata.Periodic.Enabled ? 'Yes' : 'No' }}</div>
+                                        <div><strong>Prohobit Overlap:</strong> {{ jobdata.Periodic.ProhibitOverride ? 'Yes' : 'No' }}</div>
+                                    </v-col>
+                                    <v-col>
+                                        <div><strong>Type:</strong> {{ jobdata.Periodic.SpecType }}</div>
+                                        <div><strong>Spec:</strong> {{ jobdata.Periodic.Spec }}</div>
+                                    </v-col>
+                                    <v-col>
+                                        <div><strong>Time Zone:</strong> {{ jobdata.Periodic.TimeZone }}</div>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-expansion-panel-text>
+                    </v-expansion-panel>
                     <v-expansion-panel>
                         <v-expansion-panel-title>
                             <strong>Allocations Summary</strong>
