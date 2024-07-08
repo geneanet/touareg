@@ -11,4 +11,4 @@ yarn-error.log
 *.njsproj
 *.sln
 
-index.html
+config.js
